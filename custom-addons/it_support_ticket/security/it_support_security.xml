@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 1. Kategori Aplikasi (Agar rapi di Settings) -->
+    <record id="module_category_it_support" model="ir.module.category">
+        <field name="name">IT Support</field>
+        <field name="description">Manajemen akses modul IT Support</field>
+        <field name="sequence">20</field>
+    </record>
+
+    <!-- 2. Grup: Staf IT (Peran Dasar) -->
+    <record id="group_it_support_user" model="res.groups">
+        <field name="name">Staf IT</field>
+        <field name="category_id" ref="module_category_it_support"/>
+        <!-- implied_ids artinya grup ini mewarisi hak akses 'Internal User' dasar Odoo -->
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <!-- 3. Grup: Manager IT (Peran Superior) -->
+    <record id="group_it_support_manager" model="res.groups">
+        <field name="name">Manager IT</field>
+        <field name="category_id" ref="module_category_it_support"/>
+        <!-- Manager otomatis mewarisi semua hak akses Staf IT -->
+        <field name="implied_ids" eval="[(4, ref('group_it_support_user'))]"/>
+        <!-- Otomatis jadikan user admin/root sebagai Manager -->
+        <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+    </record>
+</odoo>
