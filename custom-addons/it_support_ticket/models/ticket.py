@@ -46,3 +46,27 @@ class ItSupportTicket(models.Model):
             # kirim ke log (chatter)
             ticket.message_post(body=f"Tiket dibuka kembali oleh {self.env.user.name}")
         return True
+    
+    # ==========================================================
+    # --- FITUR BARU: OTOMATISASI SAAT PEMBUATAN TIKET ---
+    # ==========================================================
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            # Cek apakah field 'name' ada dan mengandung kata "URGENT"
+            if vals.get('name') and 'URGENT' in vals.get('name').upper():
+                vals['status'] = 'in_progress'
+        
+        # Simpan ke database
+        tickets = super(ItSupportTicket, self).create(vals_list)
+        
+        # Kirim pesan ke Chatter setelah berhasil dibuat
+        for ticket in tickets:
+            if ticket.status == 'in_progress' and 'URGENT' in ticket.name.upper():
+                ticket.message_post(
+                    body="TIKET URGENT TERDETEKSI! Status otomatis diubah menjadi Sedang Dikerjakan oleh sistem.",
+                    subject="Peringatan Tiket Urgent",
+                    message_type='notification'
+                )
+                
+        return tickets
