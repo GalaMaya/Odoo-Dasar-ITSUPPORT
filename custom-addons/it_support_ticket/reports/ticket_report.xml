@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- 1. Template Desain Laporan (Ini adalah HTML yang akan jadi PDF) -->
+    <template id="report_ticket_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2>Tiket Dukungan IT: <span t-field="o.name"/></h2>
+                        
+                        <div class="row mt-4 mb-4">
+                            <div class="col-6">
+                                <strong>Status:</strong> <span t-field="o.status"/><br/>
+                                <strong>Ditugaskan Kepada:</strong> <span t-field="o.assigned_to"/><br/>
+                                <strong>Durasi Pengerjaan:</strong> <span t-field="o.duration_hours"/> Jam
+                            </div>
+                            <div class="col-6">
+                                <strong>Tanggal Dibuat:</strong> <span t-field="o.create_date"/><br/>
+                                <strong>Tanggal Selesai:</strong> <span t-field="o.date_closed"/><br/>
+                                <strong>Dibuat Oleh:</strong> <span t-field="o.create_uid"/>
+                            </div>
+                        </div>
+
+                        <h4>Deskripsi Masalah:</h4>
+                        <div class="border p-3 bg-light" style="min-height: 100px;">
+                            <span t-field="o.description"/>
+                        </div>
+
+                        <div class="row mt-5">
+                            <div class="col-6 text-center">
+                                <p>Disetujui Oleh,</p>
+                                <br/><br/><br/>
+                                <p>___________________<br/>IT Manager</p>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <!-- 2. Mendaftarkan Action Report ke Odoo -->
+    <record id="action_report_it_ticket" model="ir.actions.report">
+        <field name="name">Cetak Tiket IT</field>
+        <field name="model">it.support.ticket</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">it_support_ticket.report_ticket_document</field>
+        <field name="report_file">it_support_ticket.report_ticket_document</field>
+        <field name="print_report_name">'Tiket_%s' % (object.name)</field>
+        <field name="binding_model_id" ref="model_it_support_ticket"/>
+        <field name="binding_type">report</field>
+    </record>
+
+</odoo>

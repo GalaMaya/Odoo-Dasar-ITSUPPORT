@@ -52,9 +52,21 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button name="action_reopen" string="Buka Kembali" type="object" class="oe_highlight" invisible="status != 'done'"/>
+                    <!-- TOMBOL PRINT BARU (Syntax diperjelas) -->
+                    <button name="%(it_support_ticket.action_report_it_ticket)d" 
+                            string="🖨️ Print PDF" 
+                            type="action" 
+                            class="btn-secondary"/>
 
-                    <field name="status" widget="statusbar" statusbar_visible="draft, in_progress, done"/>
+                    <!-- Tombol Reopen -->
+                    <button name="action_reopen" 
+                            string="🔄 Buka Kembali" 
+                            type="object" 
+                            class="oe_highlight" 
+                            invisible="status != 'done'"/>
+                    
+                    <!-- Statusbar -->
+                    <field name="status" widget="statusbar" statusbar_visible="draft,in_progress,done"/>
                 </header>
                 <sheet>
                     <group>
