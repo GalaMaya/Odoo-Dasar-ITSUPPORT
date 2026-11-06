@@ -1,22 +1,26 @@
 # 🎫 IT Support Ticket Module for Odoo 18
 
-Sebuah modul Odoo kustom yang dirancang untuk membantu tim IT internal dalam mengelola, melacak, dan menyelesaikan tiket dukungan teknis secara efisien. Dibangun dari nol menggunakan Odoo 18, modul ini mengimplementasikan berbagai fitur *enterprise-grade* seperti otomatisasi backend, keamanan berbasis peran (RBAC), dan pelacakan aktivitas.
+Sebuah modul Odoo kustom *full-stack* yang dirancang untuk membantu tim IT internal dalam mengelola, melacak, dan menyelesaikan tiket dukungan teknis secara efisien. Dibangun dari nol menggunakan Odoo 18, modul ini mengimplementasikan fitur *enterprise-grade* seperti otomatisasi backend, keamanan berbasis peran (RBAC), analitik dashboard, pelaporan PDF, dan integrasi API eksternal.
 
-##  Fitur Utama
+## ✨ Fitur Utama
 
-- **Manajemen Tiket Lengkap**: Pembuatan, penugasan, dan pelacakan status tiket (Baru, Dikerjakan, Selesai).
-- **Tampilan Kanban & List**: Visualisasi papan Kanban untuk *drag-and-drop* status, serta tampilan List yang rapi.
-- **Otomatisasi Durasi (Computed Fields)**: Menghitung secara otomatis berapa lama waktu yang dibutuhkan untuk menyelesaikan tiket (dari dibuat hingga status 'Selesai').
-- **Keamanan Data (Record Rules)**: 
+- **Manajemen Tiket Lengkap**: Pembuatan, penugasan, dan pelacakan status tiket (Baru, Dikerjakan, Selesai) dengan tampilan List, Form, dan Kanban.
+- **Keamanan Data (RBAC)**: 
   - **Staf IT**: Hanya dapat melihat dan mengelola tiket yang ditugaskan kepada mereka sendiri.
   - **Manager IT**: Memiliki akses penuh untuk melihat dan mengelola semua tiket di sistem.
-- **Chatter & Tracking**: Terintegrasi dengan modul `mail` untuk mencatat riwayat perubahan status, komentar, dan notifikasi secara otomatis.
-- **Custom Action (Reopen)**: Tombol khusus untuk membuka kembali tiket yang sudah selesai, lengkap dengan validasi UI dan log otomatis.
+- **Otomatisasi Cerdas**: 
+  - *Computed Fields*: Menghitung durasi pengerjaan tiket secara otomatis.
+  - *Backend Automation*: Auto-ubah status menjadi "Sedang Dikerjakan" dan kirim notifikasi Chatter jika judul tiket mengandung kata "URGENT".
+- **Chatter & Tracking**: Terintegrasi dengan modul `mail` untuk mencatat riwayat perubahan status, komentar, dan notifikasi real-time.
+- **Dashboard & Analitik**: Tampilan Graph (Grafik Batang) dan Pivot (Tabel Excel) untuk menganalisis performa staf dan durasi tiket.
+- **Laporan PDF (QWeb)**: Tombol "Print" untuk men-generate dokumen PDF tiket yang rapi dan profesional untuk arsip fisik.
+- **Custom Action**: Tombol "Buka Kembali" (Reopen) dengan validasi UI dan log otomatis untuk menangani tiket yang dibuka ulang.
+- **Integrasi API (XML-RPC)**: Mendukung pembuatan dan pembacaan tiket secara programatik dari aplikasi eksternal (Python, monitoring tools, website).
 
-## ️ Teknologi yang Digunakan
+## 🛠️ Teknologi yang Digunakan
 
 - **Framework**: Odoo 18 (Community/Enterprise)
-- **Bahasa Pemrograman**: Python 3, XML
+- **Bahasa Pemrograman**: Python 3, XML (QWeb)
 - **Database**: PostgreSQL
 - **Environment**: Docker, VS Code
 
@@ -26,15 +30,17 @@ Sebuah modul Odoo kustom yang dirancang untuk membantu tim IT internal dalam men
 it_support_ticket/
 ├── __init__.py
 ├── __manifest__.py
-── models/
+├── models/
 │   ├── __init__.py
-│   └── ticket.py          # Logika database, computed fields, dan custom methods
+│   └── ticket.py          # Logika database, computed fields, automation, dan API
 ├── security/
 │   ├── ir.model.access.csv # Hak akses dasar (ACL)
 │   ├── it_support_rules.xml # Record Rules (Keamanan data per user)
 │   └── it_support_security.xml # Definisi Grup (Staf IT & Manager IT)
-── views/
-    └── ticket_views.xml   # Tampilan UI (List, Form, Kanban)
+├── views/
+│   └── ticket_views.xml   # Tampilan UI (List, Form, Kanban, Graph, Pivot)
+└── reports/
+    └── ticket_report.xml  # Template QWeb untuk Laporan PDF
 ```
 
 ## 🚀 Cara Instalasi
@@ -48,14 +54,38 @@ it_support_ticket/
 
 ## 💡 Cara Penggunaan
 
-1. **Membuat Tiket**: Buka menu *IT Support > Ticket* dan klik *New*. Isi judul, deskripsi, dan tugaskan ke staf yang relevan.
-2. **Mengubah Status**: Gunakan tombol status di bagian atas form, atau geser kartu di tampilan Kanban.
-3. **Melihat Durasi**: Field "Durasi (Jam)" akan terisi otomatis setelah status diubah menjadi "Selesai".
-4. **Membuka Kembali Tiket**: Jika tiket yang sudah "Selesai" perlu ditindaklanjuti, klik tombol **🔄 Buka Kembali** di header form. Status akan kembali ke "Baru" dan tanggal selesai akan di-reset.
+### 📊 Analitik & Dashboard
+- Buka menu *IT Support > Ticket*.
+- Klik ikon **Grafik** atau **Pivot** di pojok kanan atas untuk melihat statistik durasi dan performa staf IT.
+
+### 🖨️ Cetak Laporan PDF
+- Buka salah satu tiket.
+- Klik tombol **🖨️ Print PDF** di bagian atas form untuk mengunduh dokumen arsip.
+
+### 🤖 Integrasi API (XML-RPC)
+Modul ini dapat dikontrol sepenuhnya dari luar Odoo menggunakan Python `xmlrpc.client`.
+Contoh script untuk membuat tiket secara otomatis:
+```python
+import xmlrpc.client
+
+url, db, username, password = 'http://localhost:8069', 'your_db_name', 'admin', 'admin'
+common = xmlrpc.client.ServerProxy(f'{url}/xmlrpc/2/common')
+uid = common.authenticate(db, username, password, {})
+models = xmlrpc.client.ServerProxy(f'{url}/xmlrpc/2/object')
+
+# Membuat tiket baru via API
+ticket_id = models.execute_kw(db, uid, password, 'it.support.ticket', 'create', [{
+    'name': 'Server Down - URGENT (Via API)',
+    'description': 'Dibuat otomatis oleh script monitoring.',
+    'status': 'draft'
+}])
+print(f"Tiket dibuat dengan ID: {ticket_id}")
+```
+*(Catatan: Karena fitur otomatisasi aktif, tiket dengan kata "URGENT" akan otomatis berubah statusnya menjadi "Sedang Dikerjakan" saat dibuat).*
 
 ## 👨‍💻 Penulis
 
-Dibuat oleh **BluNoirea** sebagai bagian dari eksplorasi dan pengembangan Odoo Custom Module.
+Dibuat oleh **Blue** (IT Specialist) sebagai demonstrasi kemampuan Full-Stack Odoo Development.
 
 ---
 *Catatan: Modul ini dikembangkan dan diuji pada Odoo 18. Sintaks XML menggunakan standar terbaru (tag `<list>` dan `<chatter/>`).*
