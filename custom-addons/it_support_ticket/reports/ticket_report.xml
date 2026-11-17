@@ -11,9 +11,10 @@
                         
                         <div class="row mt-4 mb-4">
                             <div class="col-6">
-                                <strong>Status:</strong> <span t-field="o.status"/><br/>
+                                <strong>Status:</strong> <span t-out="dict(o._fields['status'].selection).get(o.status, o.status)"/><br/>
                                 <strong>Ditugaskan Kepada:</strong> <span t-field="o.assigned_to"/><br/>
-                                <strong>Durasi Pengerjaan:</strong> <span t-field="o.duration_hours"/> Jam
+                                <strong>Durasi Pengerjaan:</strong>
+                                <span t-field="o.duration_hours" t-options='{"widget": "float", "precision": 2}'/> Jam
                             </div>
                             <div class="col-6">
                                 <strong>Tanggal Dibuat:</strong> <span t-field="o.create_date"/><br/>

@@ -38,6 +38,7 @@
         <field name="arch" type="xml">
             <list>
                 <field name="name"/>
+                <field name="device_id"/>
                 <field name="assigned_to"/>
                 <field name="status"/>
                 <field name="duration_hours"/>
@@ -71,6 +72,7 @@
                 <sheet>
                     <group>
                         <field name="name"/>
+                        <field name="device_id"/>
                         <field name="assigned_to"/>
                         <field name="status"/>
                         <field name="duration_hours"/>

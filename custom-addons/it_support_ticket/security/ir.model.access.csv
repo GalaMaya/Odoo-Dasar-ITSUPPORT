@@ -1,2 +1,3 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_it_support_ticket_user,access.it.support.ticket.user,model_it_support_ticket,it_support_ticket.group_it_support_user,1,1,1,1
+access_it_device_manager,access.it.device.manager,it_management_assets.model_it_device,it_support_ticket.group_it_support_manager,1,1,1,1

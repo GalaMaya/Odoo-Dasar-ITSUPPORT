@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_device_form_inherit_ticket" model="ir.ui.view">
+        <field name="name">it.device.form.inherit.it_support_ticket</field>
+        <field name="model">it.device</field>
+        <field name="inherit_id" ref="it_management_assets.view_device_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="inside">
+                <div class="oe_button_box" name="button_box">
+                    <button name="action_view_tickets" type="object" class="oe_stat_button" icon="fa-ticket">
+                        <field name="ticket_count" widget="statinfo" string="Tiket"/>
+                    </button>
+                </div>
+            </xpath>
+            <xpath expr="//notebook" position="inside">
+                <page string="Riwayat Tiket">
+                    <field name="ticket_ids" readonly="1">
+                        <list>
+                            <field name="name"/>
+                            <field name="assigned_to"/>
+                            <field name="status"/>
+                            <field name="create_date"/>
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>
