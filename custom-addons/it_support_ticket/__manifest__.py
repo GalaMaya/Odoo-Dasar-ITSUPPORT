@@ -4,7 +4,7 @@
     'summary': 'Modul sederhana untuk manajemen tiket dukungan IT',
     'category': 'Helpdesk',
     'license': 'LGPL-3',
-    'depends': ['base', 'mail', 'it_management_assets'],
+    'depends': ['base', 'mail', 'it_management_assets'], # import Dependensi modul lain
     'data': [
         'security/it_support_security.xml',
         'security/it_support_rules.xml',
